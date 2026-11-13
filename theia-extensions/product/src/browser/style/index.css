@@ -1,0 +1,764 @@
+/********************************************************************************
+ * Copyright (C) 2020 EclipseSource and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License, which is available in the project root.
+ *
+ * SPDX-License-Identifier: MIT
+ ********************************************************************************/
+
+:root {
+    --theia-branding-logo: url(../icons/TheiaIDE.png);
+    --theia-branding-icon: url(../icons/512-512.png);
+    --theia-branding-accent: #5088e7;
+    /* The minimal app intentionally does not include Theia's theme extensions. */
+    --theia-foreground: #e6edf7;
+    --theia-descriptionForeground: #94a3b8;
+    --theia-sideBar-background: #111a27;
+    --theia-editor-background: #0d141f;
+    --theia-panel-border: #2a384d;
+    --theia-focusBorder: #79a9ff;
+    --theia-ui-font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --theia-input-background: #192536;
+    --theia-input-foreground: #edf4ff;
+    --theia-input-border: #3a4a62;
+    --theia-button-background: #4f7ed8;
+    --theia-button-foreground: #ffffff;
+    --theia-button-secondaryBackground: #2b3a50;
+    --theia-button-secondaryForeground: #dce7f7;
+}
+
+body { color: var(--theia-foreground); background: var(--theia-editor-background); }
+
+/* Project chat is a pinned central editor tab. Its history is browser-local only. */
+.project-chat-widget { min-width: 0; min-height: 0; }
+.project-chat { display: flex; height: 100%; min-height: 0; background: #1e1e1e; color: #dedee3; font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.chat-history { min-width: 190px; max-width: 50%; flex-shrink: 0; display: flex; flex-direction: column; background: #191919; }
+.chat-history-resizer { position: relative; z-index: 1; width: 1px; flex-shrink: 0; background: #303033; cursor: col-resize; touch-action: none; outline: none; }
+.chat-history-resizer::after { content: ''; position: absolute; inset: 0 -4px; }
+.chat-history-resizer:hover, .chat-history-resizer:focus-visible, .resizing-history .chat-history-resizer { background: #aaa1dc; }
+.resizing-history, .resizing-history * { cursor: col-resize !important; user-select: none !important; }
+.chat-header-actions { display: flex; align-items: center; gap: 12px; }
+.chat-context-button { padding: 6px 9px; border: 1px solid #414147; border-radius: 5px; background: transparent; color: #c1bbd2; font: inherit; font-size: 11px; white-space: nowrap; cursor: pointer; }
+.workflow-widget { min-width: 0; min-height: 0; }
+.workflow-root { height: 100%; overflow: auto; background: #1e1e1e; color: #dedbe4; font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; container-type: inline-size; }
+/* Project tabs share the same measure as the Tools content. */
+:root {
+    --governed-content-width: 828px;
+    --governed-page-gutter: 36px;
+}
+.project-page {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: calc(var(--governed-content-width) + 2 * var(--governed-page-gutter));
+    margin: 0 auto;
+    padding: 40px var(--governed-page-gutter) 80px;
+    text-align: left;
+}
+@container (max-width: 650px) { .project-page { padding: 24px 18px 48px; } }
+.workflow-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 24px; }
+.workflow-header h1 { margin: 0 0 10px; font-size: 24px; font-weight: 500; }
+.workflow-header p { margin: 0; color: #9893a1; font-size: 12px; line-height: 1.6; }
+.workflow-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 0; margin-bottom: 20px; border-block: 1px solid #36323c; }
+.workflow-toolbar > div > strong, .workflow-toolbar > div > span { display: block; }
+.workflow-toolbar > div > strong { font-size: 13px; margin-bottom: 6px; }
+.workflow-toolbar > div > span { font-size: 10px; color: #9e93ad; }
+.workflow-toolbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.workflow-toolbar-actions .workflow-save-status { display: inline; margin-right: 5px; color: #aaa1b7; font-size: 10px; }
+.workflow-layout { display: grid; grid-template-columns: 250px minmax(0,1fr); gap: 24px; align-items: start; }
+.workflow-list-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; gap: 10px; }
+.workflow-list-heading h2 { margin: 0; font-size: 13px; }
+.workflow-steps ol { list-style: none; margin: 0; padding: 0; }
+.workflow-steps li { display: flex; align-items: center; padding: 9px; margin-bottom: 8px; background: #232126; border: 1px solid #39333f; border-radius: 7px; gap: 5px; }
+.workflow-steps li.selected { background: #2c2634; border-color: #9381ad; }
+.workflow-steps li.disabled { opacity: .6; }
+.workflow-step-select { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding: 6px 3px; border: 0; background: transparent; color: #d6cde0; text-align: left; font: inherit; cursor: pointer; }
+.workflow-step-number { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; flex-shrink: 0; border: 1px solid #4b4159; border-radius: 5px; color: #b3a2c8; font-size: 10px; }
+.workflow-step-select > span:last-child { min-width: 0; }
+.workflow-step-select strong { display: block; font-size: 12px; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.workflow-step-select small { display: block; margin-top: 6px; color: #92869e; font-size: 9px; }
+.workflow-move { display: flex; flex-direction: column; gap: 3px; }
+.workflow-move button { width: 23px; height: 20px; padding: 0; border: 0; border-radius: 3px; background: transparent; color: #b0a5be; cursor: pointer; }
+.workflow-move button:hover:not(:disabled) { background: #44374e; }
+.workflow-root button:disabled { opacity: .35; cursor: default; }
+.workflow-root button:focus-visible { outline: 1px solid #bdadde; outline-offset: 2px; }
+.workflow-list-help { color: #8a8095; font-size: 10px; line-height: 1.7; margin-top: 14px; }
+.workflow-editor { min-width: 0; padding: 21px; border: 1px solid #403747; border-radius: 8px; background: #232126; }
+.workflow-editor-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 24px; }
+.workflow-editor-heading h2 { margin: 0 0 12px; font-size: 18px; font-weight: 500; }
+.workflow-field { display: block; margin-bottom: 20px; color: #c7bfce; font-size: 11px; }
+.workflow-field input, .workflow-field textarea, .workflow-field select { display: block; box-sizing: border-box; width: 100%; padding: 10px 11px; margin-top: 8px; border: 1px solid #4d4356; border-radius: 5px; outline: none; background: #1b191f; color: #e0d8e9; font: inherit; font-size: 12px; line-height: 1.6; }
+.workflow-field textarea { resize: vertical; min-height: 64px; }
+.workflow-field input:focus, .workflow-field textarea:focus, .workflow-field select:focus { border-color: #ac96ce; }
+.workflow-field select { appearance: none; padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath d='m3 5 4 4 4-4' fill='none' stroke='%23aaa0b8' stroke-width='1.4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; cursor: pointer; }
+.workflow-field select:disabled { opacity: .65; cursor: default; }
+.workflow-field [aria-invalid=true] { border-color: #d28484; }
+.workflow-field small { display: block; margin-top: 7px; color: #8f829d; font-size: 10px; line-height: 1.6; }
+.workflow-field-error { display: block; margin-top: 7px; color: #e7a4a4; font-size: 11px; line-height: 1.5; }
+.workflow-switches label { display: flex; align-items: flex-start; gap: 9px; margin-top: 12px; color: #b8adca; font-size: 11px; line-height: 1.5; }
+.workflow-switches input { accent-color: #b9a4dc; width: 14px; height: 14px; flex-shrink: 0; margin: 2px 0 0; }
+.workflow-switches { border-top: 1px solid #3b3343; padding-top: 5px; }
+.workflow-notice { padding: 11px 13px; margin-bottom: 16px; color: #b4bcae; border: 1px solid #4c5546; border-radius: 5px; font-size: 11px; line-height: 1.6; }
+.workflow-execution-note { border-top: 1px solid #39323f; margin-top: 25px; padding-top: 16px; color: #897d95; font-size: 10px; line-height: 1.7; }
+.workflow-remove { color: #d29da6; }
+@container (max-width: 780px) { .workflow-toolbar { flex-wrap: wrap; } .workflow-toolbar-actions { width: 100%; } .workflow-layout { grid-template-columns: 1fr; } .workflow-steps ol { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%, 220px),1fr)); gap: 8px; } .workflow-steps li { margin-bottom: 0; } }
+.project-context-widget { min-width: 0; min-height: 0; }
+.project-context-root { height: 100%; overflow: auto; background: #1e1e1e; color: #dcd9e2; font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; container-type: inline-size; }
+.project-context-page { max-width: 1184px; }
+.context-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 28px; }
+.context-page-header h1 { margin: 0 0 9px; font-size: 24px; font-weight: 500; }
+.context-page-header p, .context-section-heading p { margin: 0; color: #96909f; font-size: 12px; line-height: 1.6; }
+.context-primary, .context-secondary { padding: 8px 12px; border-radius: 5px; font: inherit; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.context-primary { background: #bcb4e7; color: #252130; border: 1px solid #bcb4e7; }
+.context-secondary { background: #29272e; color: #d1cadd; border: 1px solid #48424f; }
+.project-context-root button:disabled { opacity: .4; cursor: default; }
+.project-context-root button:focus-visible { outline: 1px solid #b9aee5; outline-offset: 2px; }
+.context-overview { margin-bottom: 28px; padding: 18px; border: 1px solid #3a3640; border-radius: 9px; background: #242227; }
+.context-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 14px; }
+.context-section-heading h2, .context-repositories > h2 { margin: 0 0 7px; font-size: 13px; font-weight: 600; }
+.context-section-heading > span { color: #88818f; font-size: 10px; white-space: nowrap; }
+.context-overview textarea { box-sizing: border-box; width: 100%; min-height: 82px; max-height: 230px; resize: vertical; padding: 11px; border: 1px solid #48414f; border-radius: 6px; background: #1e1c21; color: #ddd6e6; font: inherit; line-height: 1.6; outline: none; }
+.context-overview textarea:focus { border-color: #a395c9; }
+.context-overview-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; gap: 14px; }
+.context-overview-footer > span { color: #8f8798; font-size: 10px; }
+.context-layout { display: grid; grid-template-columns: 270px minmax(0,1fr); gap: 26px; align-items: start; }
+.context-repositories > h2 { padding: 0 2px 8px; }
+.context-repository { padding: 14px; margin-bottom: 12px; background: #222125; border: 1px solid #38343d; border-radius: 7px; }
+.context-repository.selected { border-color: #777087; }
+.context-repository-select { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 0; border: 0; background: transparent; color: #ded7e8; cursor: pointer; text-align: left; }
+.context-repository-select strong { font-size: 13px; }
+.context-repository-select small { font-size: 10px; color: #a89abf; }
+.context-repository > p { color: #a19aa9; font-size: 11px; line-height: 1.65; }
+.context-repository-actions { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.context-text-button { padding: 4px 0; border: 0; background: transparent; color: #b6a7d4; font: inherit; font-size: 10px; cursor: pointer; }
+.context-revision { display: block; margin-top: 14px; color: #87808e; font-size: 9px; line-height: 1.6; }
+.context-alert, .context-feedback, .context-stale { padding: 11px 14px; margin-bottom: 16px; border: 1px solid #625749; border-radius: 6px; color: #c4b596; font-size: 11px; line-height: 1.6; }
+.context-alert, .context-job-error { color: #e5a7a7 !important; }
+.context-alert { border-color: #754e4e; }
+.context-feedback { color: #b8c9bb; border-color: #465b4b; }
+.context-topic-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+.context-topic-tabs button { padding: 7px 10px; border: 1px solid #403947; border-radius: 5px; background: transparent; color: #a69bb5; font: inherit; font-size: 11px; cursor: pointer; }
+.context-topic-tabs button.active { border-color: #9c8cb9; background: #322b3d; color: #e0d4ee; }
+.context-topic h3 { margin: 0 0 10px; font-size: 19px; font-weight: 500; }
+.context-topic-summary { color: #b6aabe; line-height: 1.7; }
+.context-when { padding: 10px 12px; margin: 15px 0 23px; background: #28232e; border-radius: 5px; color: #a99bb9; font-size: 11px; line-height: 1.6; }
+.context-when strong { margin-right: 6px; color: #d0bedf; }
+.context-topic h4 { margin: 24px 0 10px; font-size: 12px; font-weight: 600; }
+.context-topic ul { padding-left: 18px; }
+.context-topic li { margin-bottom: 13px; line-height: 1.7; color: #bdb4c5; font-size: 12px; }
+.context-topic li p { margin: 0 0 5px; }
+.context-evidence { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.context-source { display: inline; max-width: 100%; overflow: hidden; text-overflow: ellipsis; padding: 0; border: 0; background: transparent; color: #a390cb; font: 10px ui-monospace, SFMono-Regular, monospace; cursor: pointer; text-align: left; }
+.context-source:hover { text-decoration: underline; }
+.context-example { padding: 11px 13px; margin-bottom: 8px; border: 1px solid #38323f; border-radius: 5px; }
+.context-example p { margin: 0 0 7px; color: #beb2c9; font-size: 12px; line-height: 1.5; }
+.context-example code { display: block; margin-top: 7px; color: #98909f; font-size: 10px; }
+.context-unknowns li { color: #b3a58c; }
+.context-topic footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid #38313e; color: #82778e; font-size: 10px; line-height: 1.7; }
+.context-empty { max-width: 420px; margin: 35px auto; padding: 25px 20px; }
+.context-empty > span { color: #9b8cac; font-size: 25px; }
+.context-empty h2 { font-size: 18px; font-weight: 500; }
+.context-empty p { color: #9e93aa; font-size: 12px; line-height: 1.8; margin-bottom: 20px; }
+@container (max-width: 780px) { .context-layout { grid-template-columns: 1fr; } .context-repositories { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%, 220px),1fr)); gap: 12px; } .context-repositories > h2 { grid-column: 1/-1; } }
+.chat-history-heading { display: flex; align-items: center; justify-content: space-between; padding: 17px 14px 12px; }
+.chat-history-heading strong { font-size: 12px; font-weight: 600; }
+.chat-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; padding: 0; border: 0; border-radius: 5px; background: transparent; color: #a1a1aa; cursor: pointer; }
+.chat-icon-button:hover { color: #f2f2f4; background: #303034; }
+.chat-search { display: flex; align-items: center; gap: 7px; margin: 0 12px 16px; padding: 8px; border: 1px solid #343438; border-radius: 6px; color: #82828d; }
+.chat-search input { width: 100%; min-width: 0; padding: 0; border: 0; outline: none; background: transparent; color: #dedee3; font: inherit; font-size: 11px; }
+.chat-search input::placeholder { color: #82828d; }
+.chat-history-list { flex: 1; overflow: auto; padding: 0 8px; }
+.chat-history-list h3 { margin: 12px 8px 8px; color: #84848f; font-size: 10px; font-weight: 500; }
+.chat-history-item { display: flex; align-items: flex-start; gap: 9px; box-sizing: border-box; width: 100%; padding: 11px 9px; margin-bottom: 3px; border: 1px solid transparent; border-radius: 6px; color: #a8a8b2; background: transparent; text-align: left; cursor: pointer; }
+.chat-history-item > svg { margin-top: 2px; flex-shrink: 0; width: 15px; height: 15px; }
+.chat-history-item > div { min-width: 0; }
+.chat-history-item strong { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #d5d5dc; font-size: 12px; font-weight: 400; }
+.chat-history-item small { display: block; margin-top: 5px; font-size: 10px; color: #83838f; }
+.chat-history-item:hover { background: #252528; }
+.chat-history-item.active { border-color: #3d3d46; background: #2b2b30; }
+.chat-history-empty { padding: 34px 14px; color: #767681; text-align: center; }
+.chat-history-empty svg { margin-bottom: 12px; }
+.chat-history-empty strong { display: block; color: #a8a8b1; font-size: 12px; font-weight: 500; }
+.chat-history-empty p { margin-top: 8px; font-size: 11px; line-height: 1.6; }
+.chat-history-footer { padding: 14px; border-top: 1px solid #2a2a2e; color: #797983; font-size: 10px; line-height: 1.5; }
+.chat-main {
+    --chat-row-background: #222225;
+    --chat-row-border: #343439;
+    --chat-row-hover: #2b2b30;
+    --chat-row-hover-border: #565660;
+    --chat-row-muted: #a5a3af;
+    flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; container-type: inline-size; }
+.chat-main-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 22px; border-bottom: 1px solid #2b2b30; }
+.chat-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.chat-header-left > div { min-width: 0; }
+.chat-header-left strong { display: block; max-width: 430px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; font-weight: 500; }
+.chat-header-left span { display: block; margin-top: 4px; color: #82828d; font-size: 10px; }
+.chat-transcript { flex: 1; min-height: 0; overflow-y: auto; padding: 0 var(--governed-page-gutter); }
+.chat-welcome { max-width: var(--governed-content-width); margin: 0 auto; padding: clamp(45px, 12vh, 140px) 0 28px; }
+.chat-welcome-icon { display: inline-flex; padding: 11px; margin-bottom: 18px; border: 1px solid #42424b; border-radius: 10px; color: #b8b6d9; background: #28272f; }
+.chat-welcome h1 { margin: 0; color: #ebebef; font-size: clamp(21px, 2.2vw, 29px); line-height: 1.3; font-weight: 500; letter-spacing: -.03em; }
+.chat-welcome > p { margin: 12px 0 26px; color: #92929f; font-size: 13px; }
+
+
+
+
+.chat-message-column { max-width: var(--governed-content-width); margin: 0 auto; padding: 26px 0; }
+.chat-user-message { max-width: 85%; width: fit-content; margin: 0 0 24px auto; padding: 14px 18px; border: 1px solid #3a3a43; border-radius: 12px 12px 3px 12px; background: #2b2b32; }
+.chat-message-author { color: #bfbccc; font-size: 11px; font-weight: 600; }
+.chat-user-message p { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; }
+.chat-user-message time { display: block; color: #858590; font-size: 10px; text-align: right; }
+.chat-preview-notice { color: #878793; font-size: 11px; line-height: 1.6; text-align: center; }
+.chat-assistant-message { min-width: 0; margin: 0 0 24px; padding: 18px 20px; border: 1px solid #35353e; border-radius: 12px; background: #242428; }
+.chat-assistant-message time { display: block; margin-top: 14px; color: #858590; font-size: 10px; }
+.chat-markdown { min-width: 0; margin-top: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.chat-markdown > :first-child { margin-top: 0; }
+.chat-markdown > :last-child { margin-bottom: 0; }
+.chat-markdown p { margin: 0 0 14px; white-space: normal; }
+.chat-markdown h1, .chat-markdown h2, .chat-markdown h3, .chat-markdown h4 { margin: 22px 0 10px; line-height: 1.4; font-weight: 600; }
+.chat-markdown h1 { font-size: 21px; }
+.chat-markdown h2 { font-size: 18px; }
+.chat-markdown h3 { font-size: 15px; }
+.chat-markdown h4, .chat-markdown h5, .chat-markdown h6 { font-size: 13px; }
+.chat-markdown ul, .chat-markdown ol { padding-left: 23px; margin: 10px 0 16px; }
+.chat-markdown li { margin: 5px 0; }
+.chat-markdown li > p { margin: 6px 0; }
+.chat-markdown a { color: #b9b1ed; text-decoration: underline; text-underline-offset: 3px; }
+.chat-markdown a:hover { color: #d8d1ff; }
+.chat-markdown code { padding: 2px 5px; border-radius: 4px; background: #34313d; color: #e2d8f8; font-family: var(--theia-code-font-family, monospace); font-size: .94em; }
+.chat-markdown pre { max-width: 100%; overflow-x: auto; margin: 14px 0; padding: 14px 16px; border: 1px solid #36363e; border-radius: 8px; background: #1b1b20; white-space: pre; overflow-wrap: normal; }
+.chat-markdown pre code { padding: 0; background: transparent; color: #dddde5; white-space: pre; overflow-wrap: normal; }
+.chat-markdown blockquote { margin: 14px 0; padding: 3px 0 3px 14px; border-left: 3px solid #686078; color: #b7b3c2; }
+.chat-markdown blockquote > :last-child { margin-bottom: 0; }
+.chat-markdown table { display: block; max-width: 100%; overflow-x: auto; margin: 14px 0; border-collapse: collapse; }
+.chat-markdown th, .chat-markdown td { padding: 9px 12px; border: 1px solid #45414d; text-align: left; }
+.chat-markdown th { background: #302d36; font-weight: 600; }
+.chat-markdown hr { margin: 20px 0; border: 0; border-top: 1px solid #45414d; }
+.chat-action { margin: 0 0 20px; padding: 14px; border: 1px solid #404048; border-radius: 8px; background: #242428; }
+.chat-action.pending { border-color: #a39059; }
+.chat-action header { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.chat-action header span { color: #aaa2bb; font-size: 11px; }
+.chat-action code { display: block; overflow-wrap: anywhere; color: #cfc8ed; }
+.chat-action p { color: #aaaab6; font-size: 12px; line-height: 1.6; }
+.chat-action pre { max-height: 200px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; }
+.chat-action-buttons { display: flex; gap: 8px; margin-top: 12px; }
+.chat-action button, .chat-run-controls button { padding: 7px 12px; border: 1px solid #696275; border-radius: 5px; background: #38333f; color: #e3ddef; cursor: pointer; font: inherit; font-size: 11px; }
+.chat-action button:disabled, .chat-run-controls button:disabled { opacity: .5; cursor: default; }
+.project-chat .chat-runtime-error { color: #efa2a2; font-size: 11px; line-height: 1.6; }
+.chat-composer-area > .chat-runtime-error { max-width: var(--governed-content-width); margin: 0 auto 10px; }
+.chat-run-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: var(--governed-content-width); margin: 0 auto 10px; color: #a7a4b1; font-size: 11px; }
+.chat-action summary { cursor: pointer; }
+.chat-tool-row, .chat-read-group { margin: 0 0 8px; color: #a5a3af; font-size: 11px; }
+.chat-tool-row > summary, .chat-read-group > details > summary { padding: 9px 10px; border: 1px solid var(--chat-row-border); border-radius: 6px; background: var(--chat-row-background); cursor: pointer; line-height: 1.5; }
+.chat-tool-row > summary { display: flex; align-items: center; gap: 10px; }
+.chat-tool-row > summary::before { content: '›'; color: #777581; }
+.chat-tool-row[open] > summary::before { content: '⌄'; }
+.chat-tool-row > summary > span { flex-shrink: 0; color: #c7c3d1; }
+.chat-tool-row > summary > code { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #8e8b99; font: inherit; }
+.chat-tool-row > summary > small { flex-shrink: 0; color: #8e8b99; font-size: 10px; }
+.chat-tool-details { padding: 0 10px 8px; }
+.chat-tool-details pre { max-height: 160px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-read-group > details > summary { color: #bdb8cc; }
+.chat-read-icon { display: inline-block; margin: 0 8px 0 3px; color: #9c96b4; }
+.chat-read-group ul { margin: 4px 0 0; padding: 0 12px; list-style: none; max-height: 260px; overflow: auto; }
+.chat-read-group li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; padding: 7px 0; border-bottom: 1px solid #2b2b30; }
+.chat-read-group li > code { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 11px; }
+.chat-read-group li > small { color: #888391; font-size: 10px; }
+.chat-read-group li > p { flex-basis: 100%; margin: 0; }
+.chat-read-group.has-errors > details > summary { border-color: #705858; }
+.chat-read-approval { padding: 10px; color: #c3b9a4; line-height: 1.5; }
+.chat-composer-area { flex-shrink: 0; padding: 16px var(--governed-page-gutter) 12px; }
+.chat-composer { box-sizing: border-box; max-width: var(--governed-content-width); margin: 0 auto; padding: 14px 15px 10px; border: 1px solid #484750; border-radius: 12px; background: #27272b; }
+.chat-composer:focus-within { border-color: #8880bd; }
+.chat-composer textarea { display: block; box-sizing: border-box; width: 100%; min-height: 62px; max-height: 200px; resize: vertical; padding: 0; border: 0; outline: none; background: transparent; color: #e4e4ea; font: inherit; line-height: 1.65; }
+.chat-composer textarea::placeholder { color: #878791; }
+.chat-composer-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 9px; }
+.chat-composer-toolbar > span { color: #878791; font-size: 10px; }
+.chat-composer-toolbar button { display: inline-flex; align-items: center; justify-content: center; width: 31px; height: 31px; padding: 0; border: 0; border-radius: 7px; background: #bcb4e7; color: #23202f; cursor: pointer; }
+.chat-composer-toolbar button:disabled { opacity: .32; cursor: default; }
+.chat-composer-hint { max-width: var(--governed-content-width); margin: 10px auto 0; text-align: center; color: #777781; font-size: 10px; line-height: 1.5; }
+.project-chat button:focus-visible { outline: 1px solid #aaa1dc; outline-offset: 2px; }
+@container (max-width: 650px) { .chat-main-header { padding: 12px 15px; } .chat-transcript { padding: 0 18px; } .chat-composer-area { padding: 14px 18px 10px; } }
+
+/* This minimal product has no right-side tools. */
+.theia-right-content-panel { display: none !important; }
+
+/* Governed IDE custom panel */
+.governance-widget { min-width: 330px; }
+.governance-root { height: 100%; display: flex; flex-direction: column; background: var(--theia-sideBar-background); color: var(--theia-foreground); font: 13px var(--theia-ui-font-family); }
+.governance-header { padding: 14px 14px 11px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--theia-panel-border); }
+.governance-header strong,.governance-header div > span { display: block; }.governance-header strong { font-size: 14px; }.governance-header div > span { color: var(--theia-descriptionForeground); font-size: 11px; margin-top: 3px; }.guard-status { color: #4cd7a1; font-size: 10px; margin-top: 3px; }
+.governance-tabs { display: flex; gap: 14px; padding: 0 12px; border-bottom: 1px solid var(--theia-panel-border); }.governance-tabs button { background: transparent; color: var(--theia-descriptionForeground); border: 0; padding: 11px 0 8px; cursor: pointer; }.governance-tabs button.active { color: var(--theia-foreground); border-bottom: 2px solid var(--theia-focusBorder); }.governance-tabs b { font-size: 9px; border-radius: 8px; padding: 1px 5px; color: #d4e3ff; background: #34527b; }
+.governance-body { padding: 12px; overflow: auto; }.governance-banner,.governance-action { border: 1px solid var(--theia-panel-border); border-radius: 7px; padding: 11px; }.governance-banner { display: flex; gap: 9px; background: #143127; border-color: #27624d; color: #a9e6cc; }.governance-banner span { color: #54dfa8; }.governance-banner strong,.governance-banner small { display: block; }.governance-banner small { font-size: 10px; margin-top: 3px; color: #8fcbb3; }
+.governance-message { margin: 13px 0; padding: 10px; border-radius: 7px; background: var(--theia-editor-background); line-height: 1.45; }.governance-message.user { margin-left: 28px; background: #294873; }.governance-message strong { font-size: 11px; }.governance-message p { color: var(--theia-descriptionForeground); margin: 5px 0 0; }.governance-message code,.governance-action code,.policy-checks code { color: #c0d6ff; background: #263447; padding: 1px 3px; border-radius: 3px; }.governance-link { color: #8bb4ff; border: 0; background: transparent; padding: 6px 0 0; cursor: pointer; }.governance-composer { display: flex; gap: 6px; margin-top: 12px; }.governance-composer input { min-width: 0; flex: 1; color: var(--theia-input-foreground); background: var(--theia-input-background); border: 1px solid var(--theia-input-border); border-radius: 4px; padding: 8px; }.governance-composer button { background: var(--theia-button-background); color: var(--theia-button-foreground); border: 0; border-radius: 4px; width: 32px; cursor: pointer; }
+.action-title { display: flex; align-items: center; gap: 8px; }.action-title strong,.action-title small { display: block; }.action-title small { color: var(--theia-descriptionForeground); font-size: 10px; margin-top: 2px; }.action-title em { margin-left: auto; color: #5de0ae; background: #153c31; border-radius: 3px; padding: 3px 5px; font-size: 9px; font-style: normal; }.action-icon { background: #2d527d; border-radius: 5px; padding: 6px 8px; color: #b4d2ff; }.governance-action dl { margin: 13px 0; padding: 9px 0; border-top: 1px solid var(--theia-panel-border); border-bottom: 1px solid var(--theia-panel-border); }.governance-action dl div { display: flex; justify-content: space-between; padding: 4px 0; }.governance-action dt { color: var(--theia-descriptionForeground); }.governance-action dd { margin: 0; }.policy-pass { color: #65dcae; background: #16372e; padding: 8px; border-radius: 4px; font-size: 11px; }.action-buttons { display: flex; gap: 7px; margin-top: 12px; }.action-buttons button { background: var(--theia-button-secondaryBackground); color: var(--theia-button-secondaryForeground); border: 0; border-radius: 4px; padding: 8px; cursor: pointer; }.action-buttons .approve { flex: 1; background: var(--theia-button-background); color: var(--theia-button-foreground); }.policy-checks { margin-top: 18px; }.policy-checks h3 { color: var(--theia-descriptionForeground); font-size: 10px; letter-spacing: .08em; }.policy-checks p { color: var(--theia-descriptionForeground); font-size: 11px; }.policy-checks p::first-letter { color: #55dba9; }.governance-outcome { margin-top: 12px; padding: 8px; border-radius: 4px; background: #263d5d; color: #d4e4ff; font-size: 11px; }
+
+/* Project governance visualizes the exact inheritance order used for agent context. */
+.project-governance { padding: 13px; }
+.project-identity { display: flex; align-items: center; gap: 9px; padding: 11px; border: 1px solid var(--theia-panel-border); border-radius: 7px; background: #152235; }
+.project-mark { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 7px; background: #375eaa; color: #fff; font-weight: 700; }.project-identity strong,.project-identity small { display: block; }.project-identity small { color: var(--theia-descriptionForeground); font-size: 10px; margin-top: 2px; }.project-ready { margin-left: auto; color: #67ddaa; font-size: 9px; font-weight: 700; }
+.governance-section { margin-top: 18px; }.section-heading { display: flex; align-items: center; justify-content: space-between; }.governance-section h3 { margin: 0; color: var(--theia-descriptionForeground); font-size: 10px; letter-spacing: .08em; }.section-heading > span { color: #69dbaa; font-size: 10px; }.section-heading button { padding: 0; border: 0; background: transparent; color: #8eb6ff; font-size: 11px; cursor: pointer; }.governance-explainer { margin: 7px 0 11px; color: var(--theia-descriptionForeground); line-height: 1.35; font-size: 11px; }
+.inheritance-flow { border-left: 1px solid #39516e; margin-left: 13px; padding-left: 14px; }.inheritance-item,.inheritance-result { display: flex; align-items: center; gap: 8px; min-height: 38px; padding: 7px 8px; border: 1px solid var(--theia-panel-border); border-radius: 6px; background: var(--theia-editor-background); }.inheritance-item.selected { border-color: #5689df; background: #172945; }.inheritance-item > span,.inheritance-result > span { display: grid; place-items: center; width: 21px; height: 21px; border-radius: 5px; color: #c9dcff; background: #304d75; font-weight: 700; font-size: 10px; }.inheritance-item.locked > span { background: #385546; color: #bde8ce; }.inheritance-item strong,.inheritance-item small,.inheritance-result strong,.inheritance-result small { display: block; }.inheritance-item strong,.inheritance-result strong { font-size: 11px; }.inheritance-item small,.inheritance-result small { color: var(--theia-descriptionForeground); font-size: 9px; margin-top: 1px; }.inheritance-item em { margin-left: auto; color: #91a6c5; font-size: 9px; font-style: normal; }.inheritance-item.locked em { color: #73dca9; }.inheritance-flow > i { display: block; height: 14px; margin-left: 10px; color: #6281a6; font-style: normal; }.inheritance-result { border-color: #356c57; background: #112d25; }.inheritance-result > span { background: #28624e; color: #a7edca; }
+.repo-row { display: flex; align-items: center; gap: 8px; min-height: 34px; border-bottom: 1px solid #233248; }.repo-row:last-child { border-bottom: 0; }.repo-row strong,.repo-row small { display: block; }.repo-row strong { font-size: 11px; }.repo-row small { color: var(--theia-descriptionForeground); font-size: 9px; margin-top: 1px; }.repo-row > :last-child { margin-left: auto; color: #7395c3; }.repo-dot { width: 7px; height: 7px; border-radius: 50%; }.repo-dot.green { background: #58d49b; }.repo-dot.amber { background: #e4ba61; }
+
+/* First-run project form: it creates real local metadata before repositories are connected. */
+.project-setup-root { overflow-y: auto; min-width: 0; background: var(--theia-editor-background); container-type: inline-size; }
+.project-setup-root .governance-header { padding: 0 0 20px; }
+.project-setup-root .governance-header strong { font-size: 22px; letter-spacing: -.02em; }
+.project-setup-root .governance-header div > span { font-size: 13px; }
+.project-setup-root .project-form { padding: 26px 0 0; }
+.setup-step { display: flex; gap: 9px; margin: 4px 0 22px; }.setup-step > span { display: grid; place-items: center; flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; color: #dce8ff; background: #31568f; font-size: 11px; font-weight: 700; }.setup-step strong,.setup-step small { display: block; }.setup-step strong { font-size: 14px; }.setup-step small { margin-top: 3px; color: var(--theia-descriptionForeground); font-size: 12px; line-height: 1.4; }.project-form label { display: block; margin: 17px 0 0; color: #d9e4f5; font-size: 12px; }.project-form label em { color: var(--theia-descriptionForeground); font-size: 11px; font-style: normal; }.project-form input,.project-form textarea { box-sizing: border-box; width: 100%; margin-top: 7px; padding: 10px; border: 1px solid var(--theia-input-border); border-radius: 5px; color: var(--theia-input-foreground); background: var(--theia-input-background); font: 13px var(--theia-ui-font-family); }.project-form textarea { resize: vertical; }.form-hint { margin: 16px 0; color: var(--theia-descriptionForeground); font-size: 11px; line-height: 1.5; }.form-hint code { color: #bbd0f5; }.primary-setup { width: 100%; padding: 11px; border: 0; border-radius: 5px; color: #fff; background: #4779d2; font-weight: 600; cursor: pointer; }.primary-setup:hover { background: #5788df; }.form-error { margin: 10px 0; padding: 8px; border-radius: 4px; color: #ffd7d7; background: #4d2630; font-size: 11px; line-height: 1.35; }.setup-success { display: flex; gap: 9px; margin-bottom: 22px; padding: 11px; border: 1px solid #326c54; border-radius: 7px; background: #133126; }.setup-success > span { color: #81e6b4; font-weight: 700; }.setup-success strong,.setup-success small { display: block; }.setup-success small { margin-top: 3px; color: #9dcfb5; font-size: 10px; overflow-wrap: anywhere; }
+.project-form select { box-sizing: border-box; width: 100%; margin-top: 7px; padding: 10px; border: 1px solid var(--theia-input-border); border-radius: 5px; color: var(--theia-input-foreground); background: var(--theia-input-background); font: 13px var(--theia-ui-font-family); }.recent-projects { margin-top: 26px; }.recent-projects h3 { color: var(--theia-descriptionForeground); font-size: 10px; letter-spacing: .08em; }.recent-projects p { color: var(--theia-descriptionForeground); font-size: 12px; }.recent-project { display: block; width: 100%; margin-top: 7px; padding: 11px; border: 1px solid var(--theia-panel-border); border-radius: 5px; color: var(--theia-foreground); background: var(--theia-sideBar-background); text-align: left; cursor: pointer; }.recent-project:hover { border-color: var(--theia-focusBorder); }.recent-project strong,.recent-project small { display: block; }.recent-project small { margin-top: 3px; color: var(--theia-descriptionForeground); font-size: 11px; }
+
+.project-setup-root .primary-setup { display: block; box-sizing: border-box; width: 100%; margin: 14px auto 0; padding: 12px 24px; text-align: center; }
+.project-setup-root .recent-projects { margin-top: 40px; }
+.project-summary { padding-bottom: 18px; border-bottom: 1px solid var(--theia-panel-border); }
+.models-form .model-section { margin-bottom: 28px; padding-bottom: 26px; border-bottom: 1px solid var(--theia-panel-border); }
+.chatgpt-signin { width: 100%; padding: 13px; border: 1px solid #ddd; border-radius: 5px; background: #fff; color: #111; font: 600 13px var(--theia-ui-font-family); cursor: pointer; }
+.chatgpt-signin:disabled { opacity: .65; cursor: wait; }
+.signin-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.models-form a { color: #a8bfea; }
+.model-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.model-presets button { border: 1px solid var(--theia-input-border); border-radius: 4px; background: transparent; color: var(--theia-foreground); padding: 6px 8px; font-size: 11px; cursor: pointer; }
+.model-presets button[aria-pressed="true"] { border-color: #7196ed; background: #263653; }
+.model-section > p { margin: 7px 0 16px; color: var(--theia-descriptionForeground); font-size: 12px; line-height: 1.5; }
+.provider-options, .local-model-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.local-model-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.provider-options button, .local-model-options button { padding: 14px 12px; border: 1px solid var(--theia-input-border); border-radius: 5px; background: var(--theia-input-background); color: var(--theia-foreground); text-align: left; cursor: pointer; }
+.provider-options button[aria-pressed="true"], .local-model-options button[aria-pressed="true"] { border-color: #7196ed; background: #263653; }
+.provider-options strong, .provider-options small, .local-model-options strong, .local-model-options small { display: block; }
+.provider-options small, .local-model-options small { margin-top: 6px; color: var(--theia-descriptionForeground); font-size: 10px; line-height: 1.5; }
+.model-note, .hardware-note { margin-top: 12px; color: var(--theia-descriptionForeground); font-size: 11px; line-height: 1.6; }
+.hardware-note { padding: 9px 12px; border: 1px solid var(--theia-panel-border); border-radius: 4px; }
+.project-form .local-toggle { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; }
+.project-form .local-toggle input { width: auto; margin: 0; }
+.connected-repositories { margin-bottom: 28px; }
+.connected-repositories h3 { margin: 0 0 12px; color: var(--theia-descriptionForeground); font-size: 10px; letter-spacing: .08em; }
+.connected-repository { display: flex; align-items: center; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--theia-panel-border); }
+.connected-repository > div { flex: 1; min-width: 0; }
+.connected-repository strong, .connected-repository small { display: block; }
+.connected-repository small { margin-top: 5px; color: var(--theia-descriptionForeground); font-size: 11px; overflow-wrap: anywhere; }
+.connected-repository button { border: 1px solid var(--theia-input-border); border-radius: 4px; background: transparent; color: #edacb4; padding: 6px 10px; cursor: pointer; }
+.project-finish { display: block; width: 100%; margin-top: 20px; padding: 10px; border: 1px solid var(--theia-input-border); border-radius: 5px; background: transparent; color: var(--theia-foreground); cursor: pointer; }
+.project-back { padding: 4px 0; margin: 0; border: 0; background: transparent; color: #a8bfea; cursor: pointer; font: inherit; font-size: 12px; }
+.project-back:hover { color: #d5e3ff; }
+.project-back:focus-visible { outline: 1px solid var(--theia-focusBorder); outline-offset: 4px; }
+.connection-success { color: #8bd5ac; font-size: 12px; }
+.primary-setup:disabled { opacity: .6; cursor: wait; }
+.project-form input[aria-invalid="true"] { border-color: #ec818c; outline-color: #ec818c; }
+.project-form .field-error { display: block; margin-top: 6px; color: #f4a1ab; font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+.project-summary strong, .project-summary small { display: block; }
+.project-summary strong { font-size: 15px; }
+.project-summary small { margin-top: 6px; color: var(--theia-descriptionForeground); overflow-wrap: anywhere; }
+.repository-source { padding: 0; margin: 22px 0 0; border: 0; min-width: 0; }
+.repository-source legend { padding: 0; margin-bottom: 8px; font-size: 12px; }
+.repository-source > div { display: flex; gap: 8px; }
+.repository-source button, .folder-input button { padding: 10px 14px; border: 1px solid var(--theia-input-border); border-radius: 5px; color: var(--theia-foreground); background: var(--theia-input-background); cursor: pointer; }
+.repository-source button { flex: 1; }
+.repository-source button[aria-pressed="true"] { border-color: #7196ed; background: #263653; }
+.folder-input { display: flex; align-items: stretch; gap: 8px; margin-top: 7px; }
+.project-form .folder-input input { flex: 1; min-width: 0; margin: 0; }
+
+body[data-theia-branding="next"] {
+    --theia-branding-logo: url(../icons/TheiaIDE-next.png);
+    --theia-branding-icon: url(../icons/512-512-next.png);
+    /* The exact purple of the `next` application icon, so the product name matches it. */
+    --theia-branding-accent: #8b5cf6;
+}
+
+.theia-icon {
+    background-image: var(--theia-branding-icon);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+/*
+ * The application icon on the welcome tab, so the tab is recognizable the way a favicon makes a page.
+ * Tab icons in the main area are drawn as a mask tinted with `--theia-icon-foreground`, which would flatten
+ * the brand color, so the icon is put back as a plain background image. Core does the same for file icons,
+ * hence the selectors have to be as specific as the rules in its `tabs.css`.
+ */
+.lm-TabBar.theia-app-centers .lm-TabBar-tabIcon.tide-welcome-tab-icon,
+.lm-TabBar-tab.lm-mod-drag-image .lm-TabBar-tabIcon.tide-welcome-tab-icon {
+    /*
+     * `content-box` keeps the icon out of the `padding-right` that core gives every tab icon as the gap
+     * before the label. Without it the background fills the padding box and eats into that gap.
+     */
+    background: var(--theia-branding-icon) center/contain no-repeat content-box;
+    -webkit-mask: none;
+    mask: none;
+    min-height: var(--theia-icon-size);
+}
+
+.tide-branding-accent {
+    color: var(--theia-branding-accent);
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+.gs-text-bold {
+    font-weight: 600;
+}
+
+.gs-text-underline {
+    text-decoration: underline;
+}
+
+/*
+ * The welcome page lays out its sections in two columns: what you can do on the left, what the IDE is on
+ * the right. `auto-fit` folds them into a single column on a narrow editor without needing a media query.
+ */
+.tide-welcome-grid {
+    display: grid;
+    /*
+     * `min()` keeps the track from staying at 320px once the widget gets narrower than that: the welcome
+     * widget suppresses horizontal scrolling, so anything wider than it would be clipped rather than
+     * reachable.
+     */
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    gap: calc(var(--theia-ui-padding) * 4);
+    align-items: start;
+}
+
+.tide-welcome-column {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--theia-ui-padding) * 3);
+    /* Keeps the recent workspace paths ellipsizing instead of widening the column. */
+    min-width: 0;
+}
+
+/*
+ * The walkthroughs get a row of their own above the two columns, so that the onboarding is the first thing
+ * offered. Without a pending walkthrough the section renders nothing, and the row must not keep its margin.
+ */
+.tide-welcome-walkthroughs {
+    margin-bottom: calc(var(--theia-ui-padding) * 4);
+}
+
+.tide-welcome-walkthroughs:empty {
+    display: none;
+}
+
+/*
+ * Across the row rather than in the single column the cards form in the narrow side column of the framework
+ * welcome page. They keep the minimum and the measure of a column, so that a lone card stays the size of a
+ * card instead of stretching over the whole page.
+ */
+.tide-welcome-walkthroughs .gs-walkthrough-cards {
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: none;
+}
+
+.tide-welcome-walkthroughs .gs-walkthrough-card {
+    flex: 1 1 320px;
+    max-width: 420px;
+    /*
+     * The row decides how wide a card is, not its content: a flex item otherwise refuses to go below the
+     * width of its text, which makes a card with a longer title or description wider than the others.
+     */
+    min-width: 0;
+    /* A long unbreakable word would then reach out of the card rather than widen it. */
+    overflow-wrap: anywhere;
+}
+
+.tide-welcome-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: calc(var(--theia-ui-padding) * 3);
+}
+
+.tide-welcome-header h1 {
+    margin: 0;
+}
+
+.tide-welcome-header .gs-sub-header {
+    margin: calc(var(--theia-ui-padding) / 2) 0 0 0;
+}
+
+/*
+ * The header shows the square application icon rather than the wordmark logo. The icon is the same shape in
+ * every branding variant, so one box fits all of them, and being transparent it sits on a light and a dark
+ * theme alike. `.theia-icon` above supplies the image and swaps it per variant.
+ */
+.tide-welcome-header .tide-welcome-icon {
+    flex: 0 0 auto;
+    width: 64px;
+    height: 64px;
+    /* `.theia-icon` in core is sized and spaced for the browser menu bar logo. */
+    margin: 0;
+}
+
+.ad-logo {
+    background-image: var(--theia-branding-logo);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 250px;
+    height: 118px;
+    padding: 20px;
+}
+
+.ad-float {
+    float: right;
+}
+
+.ad-container {
+    padding: 20px;
+    width: 1150px;
+    height: 700;
+}
+
+ul.theia-aboutExtensions {
+    height: 450px;
+    overflow: hidden;
+    overflow-y: scroll;
+    list-style-type: none;
+    padding: 0;
+    margin-left: 10px;
+}
+.workflow-catalog-heading { display: flex; align-items: center; justify-content: space-between; margin: 26px 0 18px; }
+.workflow-catalog-heading h2 { margin: 0; font-size: 16px; }
+.workflow-catalog { display: flex; flex-direction: column; border-top: 1px solid #37323d; }
+.workflow-catalog-card { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; padding: 14px 12px; color: #ded8e6; background: transparent; border: 0; border-bottom: 1px solid #37323d; border-radius: 0; cursor: pointer; font: inherit; }
+.workflow-catalog-card:hover { background: #29252f; }
+.workflow-catalog-card strong { font-size: 13px; font-weight: 500; }
+.workflow-catalog-info { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.workflow-catalog-description { color: #9e95a8; font-size: 11px; line-height: 1.5; }
+.workflow-catalog-icon { color: #ad9abe; font-size: 17px; }
+.workflow-catalog-chevron { color: #a89cb6; font-size: 19px; }
+.workflow-catalog-card small { flex-shrink: 0; color: #9e95a8; font-size: 11px; margin-left: 16px; }
+.workflow-create-form { margin-top: 28px; }
+.workflow-create-form > button { width: 100%; margin-top: 16px; }
+.workflow-criteria { border: 0; margin: 24px 0; padding: 0; min-width: 0; }
+.workflow-criteria legend { color: #d5ccde; font-size: 12px; }
+.workflow-criteria > p, .workflow-criteria > small { display: block; color: #9e93aa; font-size: 11px; line-height: 1.6; margin: 8px 0 12px; }
+.workflow-criterion { margin: 8px 0; }
+.workflow-criterion-input { display: flex; align-items: center; gap: 10px; }
+.workflow-criterion-input > span { color: #9e93aa; font-size: 11px; min-width: 16px; }
+.workflow-criterion-input input { flex: 1; min-width: 0; box-sizing: border-box; background: #1b191f; color: #e0d8e9; border: 1px solid #4d4356; border-radius: 5px; padding: 10px; font: inherit; font-size: 12px; }
+.workflow-criterion-input input[aria-invalid="true"] { border-color: #d57686; }
+.workflow-criterion-input button { font-size: 20px; }
+.workflow-criteria > button { margin-top: 10px; }
+.chat-workflow-state, .chat-question {
+    border: 1px solid var(--chat-row-border);
+    border-radius: 6px;
+    background: var(--chat-row-background);
+    overflow-wrap: anywhere;
+}
+.chat-workflow-state { box-sizing: border-box; max-width: var(--governed-content-width); margin: 0 auto 8px; font-size: 12px; line-height: 1.5; }
+.chat-workflow-title { display: flex; align-items: center; gap: 8px; padding: 8px 10px; list-style: none; border-radius: 5px; }
+.chat-workflow-title > strong { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.chat-workflow-status { color: var(--chat-row-muted); font-size: 10px; white-space: nowrap; }
+.chat-workflow-status[data-phase="blocked"], .chat-workflow-status[data-phase="review"] { color: #dcc293; }
+.chat-question { padding: 12px; margin: 12px 0; }
+.chat-question > h3 { margin: 0 0 6px; font-size: 13px; }
+.chat-question > strong { display: block; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+.chat-question > h3 + strong { font-weight: 400; }
+.chat-question small { color: var(--chat-row-muted); font-size: 11px; line-height: 1.5; }
+.chat-question > small { display: block; margin-top: 8px; }
+.chat-question-options { display: grid; gap: 6px; margin-top: 10px; }
+.chat-question-options button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--chat-row-hover-border);
+    border-radius: 5px;
+    color: #e4e4ea;
+    background: transparent;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.chat-question-options button:hover:not(:disabled), .chat-question-options button[aria-pressed="true"] { border-color: #777781; background: var(--chat-row-hover); }
+.chat-question-options button:disabled { cursor: default; }
+.chat-question-options button:disabled:not([aria-pressed="true"]) { border-color: var(--chat-row-border); color: var(--chat-row-muted); }
+.chat-question-options .chat-option-copy { min-width: 0; }
+.chat-option-copy > small { display: block; margin-top: 2px; }
+.chat-option-label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: 12px; font-weight: 600; }
+.chat-question-options .chat-workflow-recommended { color: var(--chat-row-muted); font-size: 10px; font-weight: 400; }
+.chat-option-icon { flex: none; color: var(--chat-row-muted); }
+.chat-option-icon.codicon-check { color: #9bc8a6; }
+.chat-question .chat-action-buttons { flex-wrap: wrap; }
+.chat-question .chat-action-buttons button { padding: 6px 10px; border: 1px solid var(--chat-row-hover-border); border-radius: 5px; background: var(--chat-row-hover); color: inherit; font: inherit; cursor: pointer; }
+.chat-question .chat-action-buttons button:hover:not(:disabled) { border-color: #777781; }
+.chat-question .chat-action-buttons button:disabled { opacity: .5; cursor: default; }
+:is(.chat-workflow-title, .chat-question-options button, .chat-question .chat-action-buttons button):focus-visible { outline: 1px solid var(--theia-focusBorder); outline-offset: -2px; }
+.context-memory-review { font-size: 11px; margin: 14px 0; }
+.context-memory-review summary { color: #bea4d6; cursor: pointer; }
+.context-memory-review pre { max-height: 280px; overflow: auto; white-space: pre-wrap; font-size: 10px; }
+.context-memory-review button { margin: 6px 8px 0 0; }
+/* Project check definitions and explicitly reviewed local runs. */
+.tools-widget { overflow: auto; container-type: inline-size; }
+.tools-page header, .tool-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.tools-page h1 { font-size: 25px; font-weight: 600; margin: 0 0 8px; }
+.tools-page h2 { font-size: 16px; font-weight: 600; margin: 26px 0 14px; }
+.tools-page p, .tool-editor small, .tool-storage-note { color: var(--theia-descriptionForeground); line-height: 1.6; }
+.tool-list-row { display: flex; align-items: center; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--theia-panel-border); }
+.tool-list-row > div { flex: 1; min-width: 0; }
+.tool-list-row small { display: block; color: var(--theia-descriptionForeground); overflow-wrap: anywhere; margin-top: 6px; }
+.tool-editor { display: grid; gap: 17px; margin-top: 20px; }
+.tool-editor label { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.tool-editor input, .tool-editor textarea { box-sizing: border-box; width: 100%; padding: 9px 11px; border: 1px solid var(--theia-input-border, var(--theia-panel-border)); border-radius: 5px; background: var(--theia-input-background); color: var(--theia-input-foreground); font: inherit; text-align: left; }
+.tool-editor textarea { resize: vertical; font-family: var(--theia-code-font-family); }
+.tool-editor [aria-invalid=true] { border-color: var(--theia-errorForeground); }
+.tool-editor [role=alert] { color: var(--theia-errorForeground); }
+.tool-form-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.tool-arguments { display: flex; flex-direction: column; gap: 9px; }
+.tool-arguments > button { align-self: flex-start; margin-left: 0; }
+.tool-argument { display: flex; align-items: center; gap: 10px; }
+.tool-argument > input { min-width: 0; }
+.tool-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.tool-buttons .theia-button, .tool-list-row .theia-button { margin-left: 0; white-space: nowrap; }
+.tool-local-notice { font-size: 12px; padding: 10px 12px; border-left: 2px solid var(--theia-descriptionForeground); background: var(--theia-editorWidget-background); }
+.tool-review-card, .chat-tool-run { border: 1px solid var(--theia-panel-border); border-radius: 8px; padding: 18px; margin: 22px 0; min-width: 0; overflow-wrap: anywhere; }
+.tool-run-review dl { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 9px 14px; margin: 18px 0; }
+.tool-run-review dt { color: var(--theia-descriptionForeground); }
+.tool-run-review dd { margin: 0; overflow-wrap: anywhere; }
+.tool-run-review p { font-size: 12px; line-height: 1.6; }
+.tool-job { padding: 18px 0; border-bottom: 1px solid var(--theia-panel-border); }
+.tool-job small { color: var(--theia-descriptionForeground); display: block; margin: 8px 0; }
+.tool-job details { margin-top: 12px; }
+.tool-job pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 380px; overflow: auto; padding: 14px; background: var(--theia-editorWidget-background); }
+.tool-storage-note { margin-top: 36px; font-size: 12px; }
+.project-back-link { border: 0; padding: 4px 0; margin: 0 0 24px; cursor: pointer; background: none; color: var(--theia-textLink-foreground); font: inherit; }
+.project-back-link:not(:disabled):hover { color: var(--theia-textLink-activeForeground); text-decoration: underline; }
+.project-back-link:focus-visible { outline: 1px solid var(--theia-focusBorder); outline-offset: 4px; }
+.project-back-link:disabled { opacity: .4; cursor: default; }
+.tool-origin { display: inline-block; margin-top: 20px; color: var(--theia-descriptionForeground); font-size: 12px; }
+.tool-muted { color: var(--theia-descriptionForeground); font-size: 12px; line-height: 1.7; }
+.tool-binding { overflow-wrap: anywhere; }
+.tool-editor select { padding: 9px 11px; background: var(--theia-dropdown-background); color: var(--theia-dropdown-foreground); border: 1px solid var(--theia-dropdown-border); border-radius: 5px; }
+.tool-policy-rule { display: flex !important; flex-direction: row !important; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--theia-panel-border); }
+.tool-policy-rule select { min-width: 130px; }
+.tool-catalog-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 28px 0 18px; }
+.tool-catalog-controls input { flex: 1; min-width: 160px; padding: 9px 12px; }
+.tool-catalog-controls > div { display: flex; gap: 4px; }
+.tool-catalog-controls > div button { background: none; color: var(--theia-descriptionForeground); border: 1px solid transparent; padding: 7px 10px; border-radius: 4px; cursor: pointer; }
+.tool-catalog-controls > div button[aria-pressed=true] { background: var(--theia-button-secondaryBackground); color: var(--theia-button-secondaryForeground); }
+.tool-catalog-item { box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; text-align: left; padding: 17px 4px; border: 0; border-bottom: 1px solid var(--theia-panel-border); background: none; color: var(--theia-foreground); font: inherit; cursor: pointer; }
+.tool-catalog-item:hover { background: var(--theia-list-hoverBackground); }
+.tool-catalog-item > span:first-child { flex: 1; min-width: 0; }
+.tool-catalog-item strong,.tool-catalog-item small { display: block; }
+.tool-catalog-item small { color: var(--theia-descriptionForeground); line-height: 1.6; margin-top: 5px; }
+.tool-catalog-item code { display: inline-block; color: var(--theia-descriptionForeground); font-size: 11px; margin-top: 5px; }
+.tool-catalog-kind { white-space: nowrap; font-size: 12px; color: var(--theia-descriptionForeground); }
+.chat-git-review { border: 1px solid var(--theia-panel-border); border-radius: 8px; padding: 16px; margin: 18px 0; overflow-wrap: anywhere; }
+.chat-git-review pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-header-actions { flex-wrap: wrap; justify-content: flex-end; }
+@container (max-width: 650px) { .tool-form-pair { grid-template-columns: 1fr; } .tool-list-row { flex-wrap: wrap; } .tool-list-row > div { flex-basis: 100%; } }
+
+/* Explicit per-step tool scope. */
+.workflow-tools { padding: 0; margin: 0 0 26px; border: 0; }
+.workflow-tools legend { padding: 0; font-size: 13px; font-weight: 600; color: #dedbe4; }
+.workflow-tools > p { color: #9f95ac; font-size: 12px; line-height: 1.7; }
+.workflow-tools > small { display: block; color: #9f95ac; margin: 10px 0; }
+.workflow-tool-search { box-sizing: border-box; width: 100%; padding: 9px 12px; border: 1px solid #443d4e; border-radius: 5px; background: #25222b; color: #dedbe4; }
+.workflow-tool-support { margin-top: 14px; padding: 12px 14px; background: #25222b; border-radius: 5px; font-size: 11px; }
+.workflow-tool-support p,.workflow-tool-support small { color: #9f95ac; line-height: 1.7; }
+.workflow-tool-missing { color: #e6a6a6; }
+
+.workflow-selected-tools { margin: 16px 0; max-height: 300px; overflow-y: auto; border: 1px solid #3a3444; border-radius: 6px; }
+.workflow-selected-tools > small { display: block; padding: 10px 14px; color: #9f95ac; border-bottom: 1px solid #3a3444; }
+.workflow-selected-tool { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #342e3e; }
+.workflow-selected-tool:last-child { border-bottom: 0; }
+.workflow-selected-tool > span { flex: 1; min-width: 0; }
+.workflow-selected-tool strong,.workflow-tool-option strong { font-size: 12px; font-weight: 500; }
+.workflow-selected-tool small,.workflow-tool-option small { display: block; margin-top: 4px; font-size: 11px; color: #9f95ac; overflow-wrap: anywhere; }
+.workflow-tool-remove { background: transparent; border: 0; border-radius: 4px; padding: 4px 8px; font-size: 20px; color: #b8adca; cursor: pointer; }
+.workflow-tool-remove:hover { background: #382d3c; color: #efb4bf; }
+.workflow-no-tools { margin: 14px; font-size: 12px; color: #9f95ac; }
+.workflow-tool-add { position: relative; }
+.workflow-tool-search-row { display: flex; }
+.workflow-tool-search-row input { min-width: 0; flex: 1; border-radius: 5px 0 0 5px; }
+.workflow-tool-browse { padding: 0 14px; border: 1px solid #443d4e; border-left: 0; border-radius: 0 5px 5px 0; background: #25222b; color: #b8adca; cursor: pointer; }
+.workflow-tool-dropdown { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 5px); max-height: 280px; overflow-y: auto; border: 1px solid #51475d; border-radius: 6px; background: #25222b; box-shadow: 0 8px 24px #0006; }
+.workflow-tool-option { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 11px 14px; text-align: left; background: transparent; color: #dedbe4; border: 0; border-bottom: 1px solid #342e3e; cursor: pointer; font: inherit; }
+.workflow-tool-option:last-child { border-bottom: 0; }
+.workflow-tool-option:hover,.workflow-tool-option:focus { background: #382f44; }
+.workflow-tool-dropdown > p { margin: 12px 14px; color: #9f95ac; font-size: 11px; }
+
+.tool-definition-fields { margin: 22px 0; padding: 14px 0; border-bottom: 1px solid var(--theia-panel-border); }
+.tool-definition-fields > summary,.tool-method-implementation > summary { cursor: pointer; color: var(--theia-textLink-foreground); }
+.tool-method-layout { display: grid; grid-template-columns: 180px minmax(0,1fr); gap: 24px; margin: 20px 0 28px; }
+.tool-method-layout > nav { display: flex; flex-direction: column; gap: 5px; }
+.tool-method-layout > nav button { display: block; text-align: left; padding: 11px 12px; border: 0; border-radius: 5px; background: transparent; color: var(--theia-foreground); font: inherit; cursor: pointer; }
+.tool-method-layout > nav button[aria-current=true] { background: var(--theia-list-activeSelectionBackground); color: var(--theia-list-activeSelectionForeground); }
+.tool-method-layout > nav small { display: block; margin-top: 4px; opacity: .7; font-size: 11px; }
+.tool-method-panel { min-width: 0; border: 1px solid var(--theia-panel-border); border-radius: 7px; padding: 20px; }
+.tool-method-panel h3 { margin: 0 0 14px; font-size: 14px; }
+.tool-method-panel > h3 { margin-top: 26px; }
+.tool-method-panel > p { max-height: 140px; overflow: auto; }
+.tool-method-implementation { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--theia-panel-border); }
+.workflow-method-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.workflow-method-chips button { background: #352f3f; border: 1px solid #50465e; border-radius: 4px; color: #d5c8e3; font: inherit; font-size: 10px; padding: 3px 6px; cursor: pointer; }
+@media (max-width: 800px) { .tool-method-layout { grid-template-columns: minmax(0,1fr); }.tool-method-layout > nav { flex-direction: row; flex-wrap: wrap; } }
+
+.tool-methods-editor select { padding: 9px 11px; background: var(--theia-dropdown-background); color: var(--theia-dropdown-foreground); border: 1px solid var(--theia-dropdown-border); border-radius: 5px; font: inherit; }
+
+
+/* Shared fields across project setup, workflows and tool definitions. */
+:is(.project-form, .workflow-field, .tool-editor) :is(input:not([type=checkbox]):not([type=radio]), textarea, select),
+.tool-method-panel > .tool-policy-rule select {
+    box-sizing: border-box;
+    padding: 9px 11px;
+    min-width: 0;
+    border: 1px solid var(--theia-panel-border, #47434d);
+    border-radius: 5px;
+    background-color: var(--theia-editor-background);
+    color: var(--theia-input-foreground, var(--theia-foreground));
+    font: 13px/1.5 var(--theia-ui-font-family);
+    outline: none;
+}
+:is(.project-form, .workflow-field, .tool-editor) :is(input:not([type=checkbox]):not([type=radio]), textarea, select):focus,
+.tool-method-panel > .tool-policy-rule select:focus { border-color: var(--theia-focusBorder, #ac96ce); }
+:is(.project-form, .workflow-field, .tool-editor) :is(input, textarea, select)[aria-invalid=true] { border-color: var(--theia-errorForeground); }
+:is(.project-form, .workflow-field, .tool-editor) select,
+.tool-method-panel > .tool-policy-rule select {
+    appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath d='m3 5 4 4 4-4' fill='none' stroke='%23a29baa' stroke-width='1.4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+.tool-command-fields { display: grid; gap: 15px; }
+.tool-command-fields > p { margin: 0; }
+.tool-command-options { margin-top: 3px; }
+.tool-command-options > .tool-command-fields { padding-top: 12px; }
+
+.repository-management h2 { font-size: 16px; font-weight: 600; }
+.repository-management .primary-setup { margin-top: 16px; }
+.workbench-repository-status { list-style: none; padding: 0; margin: 0 0 24px; }
+.workbench-repository-status li { display: flex; justify-content: space-between; gap: 20px; padding: 10px 0; border-bottom: 1px solid var(--theia-panel-border); }
+.workbench-repository-status span { color: var(--theia-descriptionForeground); }
+
+
+.chat-workflow-approval { margin: 12px 0; }
+.chat-workflow-approval > button { margin-left: 0; }
+
+.chat-step-report-preview { max-height: 10em; overflow: hidden; }
+.chat-step-report > button { margin-top: 8px; }
+
+.chat-completed-actions { display: flex; flex-wrap: wrap; gap: 8px; max-width: var(--governed-content-width); margin: 10px auto 0; }
+.chat-completed-actions > button { margin-left: 0; margin-right: 0; }
+
+.workflow-completion-settings { margin: 0 0 28px; padding-bottom: 20px; border-bottom: 1px solid var(--theia-panel-border); }
+.workflow-completion-settings h2 { margin: 0; font-size: 16px; font-weight: 500; }
+.workflow-completion-settings > p { color: var(--theia-descriptionForeground); font-size: 12px; }
+.workflow-completion-settings ul { list-style: none; padding: 0; margin: 12px 0; }
+.workflow-completion-settings li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--theia-panel-border); }
+.workflow-completion-settings .workflow-field { margin: 12px 0 0; }
+
+.tool-policy-hint { display: block; margin-top: 5px; max-width: 60ch; color: var(--theia-descriptionForeground); font-size: 12px; font-weight: normal; line-height: 1.5; }
+
+.tool-policy-rule > span { min-width: 0; padding-right: 16px; }
+.tool-policy-rule select { flex-shrink: 0; }
+
+.workflow-step-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }

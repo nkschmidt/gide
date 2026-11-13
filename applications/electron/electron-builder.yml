@@ -1,0 +1,35 @@
+appId: local.governed.ide
+productName: Governed IDE
+electronDist: ../../node_modules/electron/dist
+electronVersion: 42.11.16
+asar: true
+asarUnpack:
+  - "**/lib/backend/native/**"
+  - "**/lib/backend/shell-integrations/**"
+  - "**/lib/prebuilds/**"
+nodeGypRebuild: false
+npmRebuild: false
+files:
+  - src-gen
+  - lib
+  - scripts/theia-electron-main.js
+  - "!**/node_modules/**"
+extraResources:
+  - from: ../../LICENSE
+    to: LICENSE.theia.txt
+directories:
+  buildResources: resources
+  output: dist
+mac:
+  category: public.app-category.developer-tools
+  identity: "-"
+  notarize: false
+  hardenedRuntime: false
+  target:
+    - target: dmg
+      arch: arm64
+    - target: zip
+      arch: arm64
+artifactName: "Governed-IDE-${version}-${arch}.${ext}"
+dmg:
+  sign: false

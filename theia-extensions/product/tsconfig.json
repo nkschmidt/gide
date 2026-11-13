@@ -1,0 +1,10 @@
+{
+    "extends": "../../configs/base.tsconfig",
+    "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "lib",
+        "baseUrl": ".",
+        "esModuleInterop": true
+    },
+    "include": ["src/browser/**/*.ts", "src/browser/**/*.tsx", "src/common/**/*.ts", "src/node/**/*.ts"]
+}

@@ -1,0 +1,71 @@
+{
+  "private": true,
+  "name": "governed-ide-electron-app",
+  "description": "Governed development workspace",
+  "productName": "Governed IDE",
+  "version": "0.1.0",
+  "main": "scripts/theia-electron-main.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "theia": {
+    "frontend": {
+      "config": {
+        "applicationName": "Governed IDE",
+        "preferences": {
+          "files.enableTrash": false,
+          "security.workspace.trust.enabled": false
+        },
+        "reloadOnReconnect": true,
+        "electron": {
+          "appUserModelId": "local.governed.ide",
+          "uriScheme": "governed-ide",
+          "showWindowEarly": false,
+          "windowOptions": {
+            "width": 1440,
+            "height": 940,
+            "minWidth": 960,
+            "minHeight": 640
+          }
+        }
+      }
+    },
+    "backend": {
+      "config": {
+        "startupTimeout": -1,
+        "configurationFolder": ".governed-ide",
+        "frontendConnectionTimeout": -1
+      }
+    },
+    "target": "electron"
+  },
+  "dependencies": {
+    "@theia/core": "1.76.0",
+    "@theia/editor": "1.76.0",
+    "@theia/filesystem": "1.76.0",
+    "@theia/messages": "1.76.0",
+    "@theia/monaco": "1.76.0",
+    "@theia/navigator": "1.76.0",
+    "@theia/preferences": "1.76.0",
+    "@theia/vsx-registry": "1.76.0",
+    "@theia/workspace": "1.76.0",
+    "theia-ide-product-ext": "1.76.1",
+    "@theia/electron": "1.76.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@theia/bundle-plugin": "1.76.0",
+    "@theia/cli": "1.76.0",
+    "electron": "42.11.16",
+    "electron-builder": "26.15.3"
+  },
+  "scripts": {
+    "build": "theia build --app-target=electron --mode production",
+    "rebuild": "theia rebuild:electron --cacheRoot ../..",
+    "start": "electron scripts/theia-electron-main.js",
+    "package:mac": "electron-builder --mac --arm64 --publish never",
+    "package:dir": "electron-builder --mac --arm64 --dir --publish never"
+  }
+}

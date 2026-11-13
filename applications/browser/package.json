@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "name": "governed-ide-browser-app",
+  "description": "Minimal governed development workspace",
+  "productName": "Governed IDE",
+  "version": "1.76.1",
+  "license": "MIT",
+  "engines": { "node": ">=24" },
+  "theia": {
+    "frontend": { "config": { "applicationName": "Governed IDE", "preferences": { "files.enableTrash": false, "security.workspace.trust.enabled": false }, "reloadOnReconnect": true } },
+    "backend": { "config": { "startupTimeout": -1, "configurationFolder": ".governed-ide", "frontendConnectionTimeout": 3000 } }
+  },
+  "dependencies": {
+    "@theia/core": "1.76.0",
+    "@theia/editor": "1.76.0",
+    "@theia/filesystem": "1.76.0",
+    "@theia/messages": "1.76.0",
+    "@theia/monaco": "1.76.0",
+    "@theia/navigator": "1.76.0",
+    "@theia/preferences": "1.76.0",
+    "@theia/vsx-registry": "1.76.0",
+    "@theia/workspace": "1.76.0",
+    "theia-ide-product-ext": "1.76.1"
+  },
+  "devDependencies": { "@theia/bundle-plugin": "1.76.0", "@theia/cli": "1.76.0" },
+  "scripts": { "build": "yarn -s rebuild && theia build --app-target=browser --mode development", "rebuild": "theia rebuild:browser --cacheRoot ../..", "start": "theia start" }
+}

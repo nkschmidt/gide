@@ -1,0 +1,37 @@
+import { dockerMethods } from '../modules/docker-tools';
+import { ProjectTool } from '../../../common/project-tool-service';
+import { AccessCategory } from '../../../common/tool-policy';
+import { ToolRegistry } from './contracts';
+export interface ToolFamily { id: string; name: string; description: string; methods: { id: string; source: string; name: string }[]; }
+export const BuiltinFamilies: ToolFamily[] = [
+    { id: 'docker', name: 'Docker', description: 'Operate Docker through this computer’s selected connection, with separate method permissions.', methods: dockerMethods.map(id => ({ id, source: `docker_${id}`, name: id[0].toUpperCase() + id.slice(1) })) },
+    { id: 'task_memory', name: 'Task Memory', description: 'Retrieve original messages and paged results from the current task.', methods: [{ id: 'search', source: 'task_memory_search', name: 'Search' }, { id: 'read', source: 'task_memory_read', name: 'Read message' }, { id: 'read_range', source: 'task_memory_read_range', name: 'Read nearby messages' }, { id: 'read_result', source: 'task_memory_read_result', name: 'Read result' }, { id: 'read_step', source: 'task_memory_read_step', name: 'Read step report' }, { id: 'read_source', source: 'task_memory_read_source', name: 'Read source task' }] },
+    { id: 'git', name: 'Git', description: 'Inspect and operate on registered Git repositories.', methods: [{ id: 'status', source: 'git_status', name: 'Status' }, { id: 'diff', source: 'git_diff', name: 'Diff' }, { id: 'prepare_branch', source: 'git_branch_create', name: 'Prepare branch' }, { id: 'command', source: 'git', name: 'Command' }, { id: 'commit_changeset', source: 'git_commit_changeset', name: 'Commit ChangeSet' }, { id: 'pull_request', source: 'git_pull_request', name: 'Create pull request' }] },
+    { id: 'github', name: 'GitHub', description: 'Create pull requests using the signed-in GitHub CLI.', methods: [{ id: 'pull_request', source: 'github_pull_request', name: 'Create pull request' }] },
+    { id: 'changesets', name: 'ChangeSets', description: 'Read plans and maintain task ChangeSets.', methods: [{ id: 'list', source: 'changeset_list', name: 'List' }, { id: 'read', source: 'changeset_read', name: 'Read' }, { id: 'write', source: 'changeset_write', name: 'Write' }, { id: 'notes', source: 'changeset_notes', name: 'Update notes' }] },
+    { id: 'context', name: 'Context', description: 'Discover, read and update durable project architecture context.', methods: [{ id: 'index', source: 'context_index', name: 'Index' }, { id: 'get', source: 'context_get', name: 'Get' }, { id: 'publish', source: 'context_publish', name: 'Publish' }, { id: 'update', source: 'context_update', name: 'Update' }] },
+    { id: 'repositories', name: 'Repositories', description: 'Discover, browse and analyze registered repositories.', methods: [{ id: 'list', source: 'repositories_list', name: 'List connected repositories' }, { id: 'browse', source: 'repository_list', name: 'Browse' }, { id: 'analyze', source: 'repository_analyze', name: 'Analyze' }] },
+    { id: 'workflow', name: 'Workflow', description: 'Inspect and advance the active workflow through explicit assessments and reviews.', methods: [{ id: 'get', source: 'workflow_get', name: 'Get' }, { id: 'ready', source: 'workflow_ready', name: 'Assess readiness' }, { id: 'report', source: 'workflow_report', name: 'Report result' }, { id: 'revise', source: 'workflow_revise', name: 'Revise step' }, { id: 'request_tools', source: 'workflow_request_tools', name: 'Request step tools' }, { id: 'route', source: 'workflow_route', name: 'Choose workflow' }] },
+    { id: 'tools', name: 'Tools', description: 'Inspect available tools and propose reviewed tool definitions.', methods: [{ id: 'list', source: 'tools_list', name: 'List' }, { id: 'get', source: 'tools_get', name: 'Get definition' }, { id: 'implementations', source: 'tools_implementations', name: 'Installed implementations' }, { id: 'propose', source: 'tools_propose', name: 'Propose definition' }] },
+    { id: 'files', name: 'Files', description: 'Search and read files, replace text and apply scoped repository edits.', methods: [{ id: 'search', source: 'repository_search', name: 'Search' }, { id: 'read', source: 'files_read', name: 'Read' }, { id: 'edit', source: 'repository_edit', name: 'Edit' }, { id: 'replace', source: 'repository_replace', name: 'Replace text' }] },
+    { id: 'executions', name: 'Executions', description: 'Inspect and stop task-owned command executions.', methods: [{ id: 'get', source: 'jobs_get', name: 'Get' }, { id: 'cancel', source: 'jobs_cancel', name: 'Cancel' }] }
+];
+export function familyReferences(text: string, families:ToolFamily[]=BuiltinFamilies): string {
+    const names=Object.fromEntries(families.flatMap(family=>family.methods.map(method=>[method.source,`${family.id}.${method.id}`])));
+    return text.replace(new RegExp(`\\b(${Object.keys(names).sort((a,b)=>b.length-a.length).join('|')})\\b`,'g'), name=>names[name]);
+}
+export interface BuiltinTemplate { tool: ProjectTool; module: string; version: string; categories: AccessCategory[]; workflowSupport?: boolean; }
+export function builtinTemplates(registry: ToolRegistry): BuiltinTemplate[] {
+    const catalog = registry.catalog(); const grouped = new Set(registry.families.flatMap(family => family.methods.map(method => method.source)));
+    const result: BuiltinTemplate[] = registry.families.map(family => {
+        const categories: AccessCategory[] = [];
+        const methods = family.methods.map(method => { const source = catalog.find(item => item.executor.definition.name === method.source); if (!source) throw new Error(`Missing installed method handler ${method.source}.`);
+            categories.push(...source.access.categories.map(category => ({ ...category, id: `${method.id}--${category.id}`, label: `${method.name} · ${category.label}` })));
+            return { id: method.id, name: method.name, description: familyReferences(source.executor.definition.description,registry.families), implementation: { executor: 'handler', configuration: { handler: `${source.module}/${method.source}`, version: source.version.split('.')[0], settings: {} } } };
+        });
+        const command = catalog.find(item => item.executor.definition.name === family.id);
+        return { module: command?.module || 'builtin.methods', version: '1.0.0', categories, tool: { schemaVersion: 2, id: `builtin.${family.id}`, toolName: family.id, name: family.name, description: family.description, implementation: { executor: 'methods', configuration: { methods } }, policy: Object.fromEntries(categories.map(category => [category.id, category.defaultDecision])) } };
+    });
+    for (const item of catalog.filter(item => !grouped.has(item.executor.definition.name))) result.push({ module: item.module, version: item.version, categories: item.access.categories, workflowSupport: item.executor.workflowSupport, tool: { schemaVersion: 2, id: `builtin.${item.executor.definition.name}`, toolName: item.executor.definition.name, name: item.executor.definition.name.replace(/_/g,' ').replace(/^./,c=>c.toUpperCase()), description: item.executor.definition.description, implementation: { executor: 'handler', configuration: { handler: `${item.module}/${item.executor.definition.name}`, version: item.version.split('.')[0], settings: {} } }, policy: Object.fromEntries(item.access.categories.map(category => [category.id, category.defaultDecision])) } });
+    return result;
+}
